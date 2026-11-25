@@ -31,14 +31,10 @@ final class CalendarReplicaUITests: XCTestCase {
         XCTAssertTrue(registerTitle.waitForExistence(timeout: 5), "Register screen should appear")
 
         let registerUsername = app.textFields["register.username"]
-        XCTAssertTrue(registerUsername.waitForExistence(timeout: 5))
-        registerUsername.tap()
-        registerUsername.typeText("filip\n")
+        focusAndType("filip\n", into: registerUsername)
 
         let registerPassword = app.secureTextFields["register.password"]
-        XCTAssertTrue(registerPassword.waitForExistence(timeout: 5))
-        registerPassword.tap()
-        registerPassword.typeText("password123\n")
+        focusAndType("password123\n", into: registerPassword)
 
         captureScreenshot(named: "02_register_screen")
 
@@ -64,12 +60,12 @@ final class CalendarReplicaUITests: XCTestCase {
             firstHolidayChip.waitForExistence(timeout: 15),
             "Live Nager.Date public holiday chips should load for current year"
         )
+        Thread.sleep(forTimeInterval: 0.5)
         captureScreenshot(named: "04_calendar_screen")
 
         // 5. Add a custom event on today's date
         let eventField = app.textFields["calendar.eventTitle"]
-        scrollToAndTap(eventField)
-        eventField.typeText("Doctor Appointment\n")
+        focusAndType("Doctor Appointment\n", into: eventField)
 
         let addEventButton = app.buttons["calendar.addEvent"]
         scrollToAndTap(addEventButton)
@@ -84,8 +80,7 @@ final class CalendarReplicaUITests: XCTestCase {
         let holidayCard = app.staticTexts["calendar.holidayCard"]
         XCTAssertTrue(holidayCard.waitForExistence(timeout: 5), "API public holiday card should appear")
 
-        scrollToAndTap(eventField)
-        eventField.typeText("Holiday Dinner\n")
+        focusAndType("Holiday Dinner\n", into: eventField)
         scrollToAndTap(addEventButton)
 
         let holidayDinnerEvent = app.staticTexts["Holiday Dinner"]
@@ -106,12 +101,10 @@ final class CalendarReplicaUITests: XCTestCase {
         captureScreenshot(named: "08_signed_out_login")
 
         let loginUsername = app.textFields["login.username"]
-        loginUsername.tap()
-        loginUsername.typeText("filip\n")
+        focusAndType("filip\n", into: loginUsername)
 
         let loginPassword = app.secureTextFields["login.password"]
-        loginPassword.tap()
-        loginPassword.typeText("password123\n")
+        focusAndType("password123\n", into: loginPassword)
 
         scrollToAndTap(app.buttons["login.submit"])
 
@@ -126,6 +119,16 @@ final class CalendarReplicaUITests: XCTestCase {
             persistedEvent.waitForExistence(timeout: 5),
             "Previously saved custom event should persist across sign-out and sign-in"
         )
+    }
+
+    private func focusAndType(_ text: String, into field: XCUIElement) {
+        scrollToAndTap(field)
+        if !app.keyboards.firstMatch.waitForExistence(timeout: 2) {
+            Thread.sleep(forTimeInterval: 0.4)
+            field.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
+            Thread.sleep(forTimeInterval: 0.5)
+        }
+        field.typeText(text)
     }
 
     private func scrollToAndTap(_ element: XCUIElement, maxSwipes: Int = 3) {

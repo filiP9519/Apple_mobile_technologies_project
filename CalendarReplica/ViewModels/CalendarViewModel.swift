@@ -1,0 +1,105 @@
+import Foundation
+import Observation
+
+@Observable
+@MainActor
+final class CalendarViewModel {
+    var selectedDate: Date = Date()
+    var countryCode: String = "SK"
+    var events: [CalendarEvent] = []
+    var holidaysForSelectedDate: [Holiday] = []
+    var allHolidaysForCurrentYear: [Holiday] = []
+    var isLoadingHolidays: Bool = false
+    var apiErrorMessage: String?
+
+    private(set) var activeUser: UserModel?
+    private var cachedHolidaysByKey: [String: [Holiday]] = [:]
+
+    private let repository: CalendarRepository
+    private let holidayService: HolidayFetching
+
+    init(
+        repository: CalendarRepository,
+        holidayService: HolidayFetching = NagerHolidayAPIService()
+    ) {
+        self.repository = repository
+        self.holidayService = holidayService
+    }
+
+    func setActiveUser(_ user: UserModel?) {
+        activeUser = user
+        reloadEvents()
+    }
+
+    func selectDate(_ date: Date) async {
+        selectedDate = date
+        reloadEvents()
+        let year = DateFormatting.year(from: date)
+        await loadHolidaysIfNeeded(for: year)
+        updateHolidaysForSelectedDate()
+    }
+
+    func loadHolidaysIfNeeded(for year: Int, forceRefresh: Bool = false) async {
+        let cacheKey = "\(year)-\(countryCode)"
+        if !forceRefresh, let cached = cachedHolidaysByKey[cacheKey] {
+            allHolidaysForCurrentYear = cached
+            updateHolidaysForSelectedDate()
+            return
+        }
+
+        isLoadingHolidays = true
+        apiErrorMessage = nil
+        defer { isLoadingHolidays = false }
+
+        do {
+            let fetched = try await holidayService.fetchHolidays(year: year, countryCode: countryCode)
+            cachedHolidaysByKey[cacheKey] = fetched
+            allHolidaysForCurrentYear = fetched
+            updateHolidaysForSelectedDate()
+        } catch {
+            apiErrorMessage = error.localizedDescription
+        }
+    }
+
+    func addEvent(title: String) {
+        let trimmed = title.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty, let user = activeUser else { return }
+
+        do {
+            try repository.addEvent(title: trimmed, date: selectedDate, owner: user)
+            reloadEvents()
+        } catch {
+            apiErrorMessage = "Could not save event: \(error.localizedDescription)"
+        }
+    }
+
+    func deleteEvent(_ event: CalendarEvent) {
+        do {
+            try repository.deleteEvent(event)
+            reloadEvents()
+        } catch {
+            apiErrorMessage = "Could not delete event: \(error.localizedDescription)"
+        }
+    }
+
+    func reloadEvents() {
+        guard let username = activeUser?.username else {
+            events = []
+            return
+        }
+
+        do {
+            events = try repository.fetchEvents(for: selectedDate, ownerUsername: username)
+        } catch {
+            events = []
+            apiErrorMessage = "Could not load events: \(error.localizedDescription)"
+        }
+    }
+
+    private func updateHolidaysForSelectedDate() {
+        let selectedKey = DateFormatting.apiDateKey(from: selectedDate)
+        let year = DateFormatting.year(from: selectedDate)
+        let yearHolidays = cachedHolidaysByKey["\(year)-\(countryCode)"] ?? allHolidaysForCurrentYear
+        holidaysForSelectedDate = yearHolidays.filter { $0.date == selectedKey }
+    }
+}

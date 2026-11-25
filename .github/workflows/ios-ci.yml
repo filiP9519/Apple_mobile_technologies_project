@@ -1,0 +1,224 @@
+name: iOS Build, Tests & Screenshots
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - 'docs/**'
+      - 'README.md'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-test:
+    runs-on: macos-15
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Show Xcode version
+        run: xcodebuild -version
+
+      - name: Install XcodeGen and generate project
+        run: |
+          brew install xcodegen
+          xcodegen generate
+
+      - name: Select and boot iOS Simulator
+        run: |
+          SIM_UDID=$(python3 - <<'PY'
+          import json, subprocess
+
+          raw = subprocess.check_output(["xcrun", "simctl", "list", "devices", "available", "-j"])
+          data = json.loads(raw)
+          candidates = []
+          for runtime, devices in data.get("devices", {}).items():
+              if "iOS" not in runtime:
+                  continue
+              for d in devices:
+                  if d.get("isAvailable") and "iPhone" in d.get("name", ""):
+                      candidates.append((runtime, d["name"], d["udid"]))
+
+          def score(item):
+              runtime, name, _ = item
+              s = 0
+              if "iOS-18" in runtime:
+                  s += 100
+              if name == "iPhone 16":
+                  s += 50
+              elif name == "iPhone 16 Pro":
+                  s += 40
+              elif "iPhone 16" in name:
+                  s += 30
+              elif "iPhone 15" in name:
+                  s += 20
+              return (s, runtime, name)
+
+          candidates.sort(key=score, reverse=True)
+          if not candidates:
+              raise SystemExit("No available iPhone simulator found")
+          chosen = candidates[0]
+          print(f"Chosen simulator: {chosen}", file=__import__("sys").stderr)
+          print(chosen[2])
+          PY
+          )
+          echo "SIM_UDID=$SIM_UDID" >> "$GITHUB_ENV"
+          xcrun simctl boot "$SIM_UDID" || true
+          xcrun simctl bootstatus "$SIM_UDID" -b
+
+      - name: Run Unit & UI Tests
+        id: test_run
+        run: |
+          set -o pipefail
+          rm -rf TestResults.xcresult raw_attachments
+          xcodebuild test \
+            -project CalendarReplica.xcodeproj \
+            -scheme CalendarReplica \
+            -destination "platform=iOS Simulator,id=$SIM_UDID" \
+            -resultBundlePath TestResults.xcresult \
+            CODE_SIGNING_ALLOWED=NO \
+            | tee test_output.log
+
+      - name: Export Screenshots & Test Report
+        if: always()
+        run: |
+          mkdir -p docs/screenshots raw_attachments
+          rm -f docs/screenshots/*.png
+
+          if [ -d "TestResults.xcresult" ]; then
+            xcrun xcresulttool export attachments \
+              --path TestResults.xcresult \
+              --output-path raw_attachments || true
+
+            xcrun xcresulttool get test-results summary \
+              --path TestResults.xcresult > docs/test-summary.json || true
+
+            xcrun xcresulttool get test-results tests \
+              --path TestResults.xcresult > docs/test-details.json || true
+          fi
+
+          python3 - <<'PY'
+          import json, os, re, shutil
+
+          manifest_path = "raw_attachments/manifest.json"
+          out_dir = "docs/screenshots"
+          copied = []
+
+          if os.path.exists(manifest_path):
+              with open(manifest_path, "r", encoding="utf-8") as f:
+                  manifest = json.load(f)
+
+              entries = manifest if isinstance(manifest, list) else manifest.get("attachments", [])
+              for test_entry in entries:
+                  attachments = test_entry.get("attachments", []) if isinstance(test_entry, dict) else []
+                  if not attachments and isinstance(test_entry, dict) and "exportedFileName" in test_entry:
+                      attachments = [test_entry]
+                  for att in attachments:
+                      src_name = att.get("exportedFileName", "")
+                      suggested = att.get("suggestedHumanReadableName", src_name)
+                      src_path = os.path.join("raw_attachments", src_name)
+                      if not os.path.isfile(src_path):
+                          continue
+                      if not src_name.lower().endswith(".png") and not suggested.lower().endswith(".png"):
+                          continue
+                      base = re.sub(r"_\d+_[0-9A-Fa-f-]+(\.png)$", r"\1", suggested)
+                      if not base.lower().endswith(".png"):
+                          base += ".png"
+                      base = re.sub(r"[^A-Za-z0-9._-]", "_", base)
+                      dst_path = os.path.join(out_dir, base)
+                      shutil.copy2(src_path, dst_path)
+                      copied.append(base)
+
+          print("Copied screenshots:", sorted(copied))
+
+          summary = {}
+          if os.path.exists("docs/test-summary.json"):
+              with open("docs/test-summary.json", "r", encoding="utf-8") as f:
+                  try:
+                      summary = json.load(f)
+                  except Exception:
+                      summary = {}
+
+          details = {}
+          if os.path.exists("docs/test-details.json"):
+              with open("docs/test-details.json", "r", encoding="utf-8") as f:
+                  try:
+                      details = json.load(f)
+                  except Exception:
+                      details = {}
+
+          test_cases = []
+          def walk(node, suite_path):
+              if not isinstance(node, dict):
+                  return
+              ntype = node.get("nodeType", "")
+              name = node.get("name", "")
+              if ntype == "Test Case":
+                  test_cases.append({
+                      "suite": " / ".join(suite_path),
+                      "name": name,
+                      "result": node.get("result", "Unknown"),
+                      "duration": node.get("duration", "-")
+                  })
+              next_suite = suite_path + ([name] if ntype in ("Test Suite", "Unit test bundle", "UI test bundle") and name else [])
+              for child in node.get("children", []):
+                  walk(child, next_suite)
+
+          for root in details.get("testNodes", []):
+              walk(root, [])
+
+          lines = [
+              "# CalendarReplica Automated Test Report",
+              "",
+              f"- **Result**: `{summary.get('result', 'Unknown')}`",
+              f"- **Total Tests**: `{summary.get('totalTestCount', len(test_cases))}`",
+              f"- **Passed**: `{summary.get('passedTests', '-')}`",
+              f"- **Failed**: `{summary.get('failedTests', '-')}`",
+              f"- **Skipped**: `{summary.get('skippedTests', '-')}`",
+              "",
+              "## Executed Test Cases",
+              "",
+              "| Suite | Test Case | Result | Duration |",
+              "| --- | --- | --- | --- |",
+          ]
+          for tc in test_cases:
+              lines.append(f"| {tc['suite']} | `{tc['name']}` | {tc['result']} | {tc['duration']} |")
+
+          lines.extend([
+              "",
+              "## Captured Simulator Screenshots",
+              "",
+          ])
+          for shot in sorted(set(copied)):
+              lines.append(f"- `{shot}`")
+
+          with open("docs/TEST_REPORT.md", "w", encoding="utf-8") as f:
+              f.write("\n".join(lines) + "\n")
+          PY
+
+      - name: Upload test artifacts and screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-test-proof
+          path: |
+            docs/
+            test_output.log
+            CalendarReplica.xcodeproj
+            TestResults.xcresult
+
+      - name: Commit generated Xcode project, test report, and screenshots
+        if: success()
+        continue-on-error: true
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add CalendarReplica.xcodeproj docs/
+          if ! git diff --cached --quiet; then
+            git commit -m "ci: update Xcode project, test report, and simulator screenshots [skip ci]"
+            git push origin HEAD:main
+          fi

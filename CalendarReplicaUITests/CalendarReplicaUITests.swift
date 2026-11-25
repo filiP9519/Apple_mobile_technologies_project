@@ -118,8 +118,12 @@ final class CalendarReplicaUITests: XCTestCase {
         XCTAssertTrue(homeTitle.waitForExistence(timeout: 10), "Re-login should navigate back to Home")
         app.buttons["home.openCalendar"].tap()
         XCTAssertTrue(datePicker.waitForExistence(timeout: 10))
+        let persistedEvent = app.staticTexts["Doctor Appointment"]
+        if !persistedEvent.waitForExistence(timeout: 3) {
+            app.swipeUp()
+        }
         XCTAssertTrue(
-            app.staticTexts["Doctor Appointment"].waitForExistence(timeout: 5),
+            persistedEvent.waitForExistence(timeout: 5),
             "Previously saved custom event should persist across sign-out and sign-in"
         )
     }

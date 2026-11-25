@@ -28,7 +28,13 @@ final class CalendarViewModel {
 
     func setActiveUser(_ user: UserModel?) {
         activeUser = user
-        reloadEvents()
+        if user == nil {
+            selectedDate = Date()
+            events = []
+            updateHolidaysForSelectedDate()
+        } else {
+            reloadEvents()
+        }
     }
 
     func selectDate(_ date: Date) async {

@@ -18,8 +18,8 @@
             {
               "children" : [
                 {
-                  "duration" : "0.043s",
-                  "durationInSeconds" : 0.04311096668243408,
+                  "duration" : "0.052s",
+                  "durationInSeconds" : 0.0517960786819458,
                   "name" : "testDuplicateRegistrationReturnsUsernameExistsError()",
                   "nodeIdentifier" : "AuthViewModelTests/testDuplicateRegistrationReturnsUsernameExistsError()",
                   "nodeIdentifierURL" : "test://com.apple.xcode/CalendarReplica/CalendarReplicaTests/AuthViewModelTests/testDuplicateRegistrationReturnsUsernameExistsError",
@@ -27,8 +27,8 @@
                   "result" : "Passed"
                 },
                 {
-                  "duration" : "0.0031s",
-                  "durationInSeconds" : 0.003054022789001465,
+                  "duration" : "0.0092s",
+                  "durationInSeconds" : 0.009232044219970703,
                   "name" : "testLoginWithEmptyCredentialsSetsError()",
                   "nodeIdentifier" : "AuthViewModelTests/testLoginWithEmptyCredentialsSetsError()",
                   "nodeIdentifierURL" : "test://com.apple.xcode/CalendarReplica/CalendarReplicaTests/AuthViewModelTests/testLoginWithEmptyCredentialsSetsError",
@@ -36,8 +36,8 @@
                   "result" : "Passed"
                 },
                 {
-                  "duration" : "0.0097s",
-                  "durationInSeconds" : 0.00973498821258545,
+                  "duration" : "0.011s",
+                  "durationInSeconds" : 0.010682940483093262,
                   "name" : "testLoginWithValidAndInvalidCredentials()",
                   "nodeIdentifier" : "AuthViewModelTests/testLoginWithValidAndInvalidCredentials()",
                   "nodeIdentifierURL" : "test://com.apple.xcode/CalendarReplica/CalendarReplicaTests/AuthViewModelTests/testLoginWithValidAndInvalidCredentials",
@@ -45,8 +45,8 @@
                   "result" : "Passed"
                 },
                 {
-                  "duration" : "0.01s",
-                  "durationInSeconds" : 0.010001063346862793,
+                  "duration" : "0.016s",
+                  "durationInSeconds" : 0.01613593101501465,
                   "name" : "testRegisterNewUserAutoAuthenticatesAndPersists()",
                   "nodeIdentifier" : "AuthViewModelTests/testRegisterNewUserAutoAuthenticatesAndPersists()",
                   "nodeIdentifierURL" : "test://com.apple.xcode/CalendarReplica/CalendarReplicaTests/AuthViewModelTests/testRegisterNewUserAutoAuthenticatesAndPersists",
@@ -54,8 +54,8 @@
                   "result" : "Passed"
                 },
                 {
-                  "duration" : "0.0029s",
-                  "durationInSeconds" : 0.002859950065612793,
+                  "duration" : "0.0071s",
+                  "durationInSeconds" : 0.007115006446838379,
                   "name" : "testRegisterWithEmptyCredentialsSetsError()",
                   "nodeIdentifier" : "AuthViewModelTests/testRegisterWithEmptyCredentialsSetsError()",
                   "nodeIdentifierURL" : "test://com.apple.xcode/CalendarReplica/CalendarReplicaTests/AuthViewModelTests/testRegisterWithEmptyCredentialsSetsError",
@@ -63,8 +63,8 @@
                   "result" : "Passed"
                 },
                 {
-                  "duration" : "0.0065s",
-                  "durationInSeconds" : 0.006532073020935059,
+                  "duration" : "0.012s",
+                  "durationInSeconds" : 0.012452006340026855,
                   "name" : "testSignOutClearsStateAndDefaults()",
                   "nodeIdentifier" : "AuthViewModelTests/testSignOutClearsStateAndDefaults()",
                   "nodeIdentifierURL" : "test://com.apple.xcode/CalendarReplica/CalendarReplicaTests/AuthViewModelTests/testSignOutClearsStateAndDefaults",
@@ -80,8 +80,8 @@
             {
               "children" : [
                 {
-                  "duration" : "0.031s",
-                  "durationInSeconds" : 0.0312349796295166,
+                  "duration" : "0.19s",
+                  "durationInSeconds" : 0.18803906440734863,
                   "name" : "testAddCalendarEventIntentPersistsEventToSwiftData()",
                   "nodeIdentifier" : "CalendarIntentsTests/testAddCalendarEventIntentPersistsEventToSwiftData()",
                   "nodeIdentifierURL" : "test://com.apple.xcode/CalendarReplica/CalendarReplicaTests/CalendarIntentsTests/testAddCalendarEventIntentPersistsEventToSwiftData",
@@ -89,8 +89,8 @@
                   "result" : "Passed"
                 },
                 {
-                  "duration" : "0.011s",
-                  "durationInSeconds" : 0.011185050010681152,
+                  "duration" : "0.02s",
+                  "durationInSeconds" : 0.01959395408630371,
                   "name" : "testGetDayOverviewIntentCombinesHolidaysAndCustomEvents()",
                   "nodeIdentifier" : "CalendarIntentsTests/testGetDayOverviewIntentCombinesHolidaysAndCustomEvents()",
                   "nodeIdentifierURL" : "test://com.apple.xcode/CalendarReplica/CalendarReplicaTests/CalendarIntentsTests/testGetDayOverviewIntentCombinesHolidaysAndCustomEvents",
@@ -106,8 +106,8 @@
             {
               "children" : [
                 {
-                  "duration" : "0.55s",
-                  "durationInSeconds" : 0.5519570112228394,
+                  "duration" : "0.026s",
+                  "durationInSeconds" : 0.026306986808776855,
                   "name" : "testAddAndDeleteCustomEventPersistsInSwiftData()",
                   "nodeIdentifier" : "CalendarViewModelTests/testAddAndDeleteCustomEventPersistsInSwiftData()",
                   "nodeIdentifierURL" : "test://com.apple.xcode/CalendarReplica/CalendarReplicaTests/CalendarViewModelTests/testAddAndDeleteCustomEventPersistsInSwiftData",
@@ -115,8 +115,17 @@
                   "result" : "Passed"
                 },
                 {
-                  "duration" : "0.012s",
-                  "durationInSeconds" : 0.011707901954650879,
+                  "duration" : "0.19s",
+                  "durationInSeconds" : 0.18505406379699707,
+                  "name" : "testDayIndicatorStateForHolidaysCustomEventsAndBoth()",
+                  "nodeIdentifier" : "CalendarViewModelTests/testDayIndicatorStateForHolidaysCustomEventsAndBoth()",
+                  "nodeIdentifierURL" : "test://com.apple.xcode/CalendarReplica/CalendarReplicaTests/CalendarViewModelTests/testDayIndicatorStateForHolidaysCustomEventsAndBoth",
+                  "nodeType" : "Test Case",
+                  "result" : "Passed"
+                },
+                {
+                  "duration" : "0.018s",
+                  "durationInSeconds" : 0.017807960510253906,
                   "name" : "testEventsAreIsolatedPerUserAndDate()",
                   "nodeIdentifier" : "CalendarViewModelTests/testEventsAreIsolatedPerUserAndDate()",
                   "nodeIdentifierURL" : "test://com.apple.xcode/CalendarReplica/CalendarReplicaTests/CalendarViewModelTests/testEventsAreIsolatedPerUserAndDate",
@@ -124,8 +133,8 @@
                   "result" : "Passed"
                 },
                 {
-                  "duration" : "0.012s",
-                  "durationInSeconds" : 0.012414097785949707,
+                  "duration" : "0.014s",
+                  "durationInSeconds" : 0.013815999031066895,
                   "name" : "testHolidayAPIErrorSetsMessageWithoutCrashing()",
                   "nodeIdentifier" : "CalendarViewModelTests/testHolidayAPIErrorSetsMessageWithoutCrashing()",
                   "nodeIdentifierURL" : "test://com.apple.xcode/CalendarReplica/CalendarReplicaTests/CalendarViewModelTests/testHolidayAPIErrorSetsMessageWithoutCrashing",
@@ -133,11 +142,20 @@
                   "result" : "Passed"
                 },
                 {
-                  "duration" : "0.013s",
-                  "durationInSeconds" : 0.012811064720153809,
+                  "duration" : "0.0071s",
+                  "durationInSeconds" : 0.007072091102600098,
                   "name" : "testHolidayFilteringAndYearCaching()",
                   "nodeIdentifier" : "CalendarViewModelTests/testHolidayFilteringAndYearCaching()",
                   "nodeIdentifierURL" : "test://com.apple.xcode/CalendarReplica/CalendarReplicaTests/CalendarViewModelTests/testHolidayFilteringAndYearCaching",
+                  "nodeType" : "Test Case",
+                  "result" : "Passed"
+                },
+                {
+                  "duration" : "0.01s",
+                  "durationInSeconds" : 0.010312080383300781,
+                  "name" : "testMoveMonthUpdatesDisplayedMonthAndLoadsNewYearHolidays()",
+                  "nodeIdentifier" : "CalendarViewModelTests/testMoveMonthUpdatesDisplayedMonthAndLoadsNewYearHolidays()",
+                  "nodeIdentifierURL" : "test://com.apple.xcode/CalendarReplica/CalendarReplicaTests/CalendarViewModelTests/testMoveMonthUpdatesDisplayedMonthAndLoadsNewYearHolidays",
                   "nodeType" : "Test Case",
                   "result" : "Passed"
                 }
@@ -150,8 +168,8 @@
             {
               "children" : [
                 {
-                  "duration" : "0.014s",
-                  "durationInSeconds" : 0.014250993728637695,
+                  "duration" : "0.03s",
+                  "durationInSeconds" : 0.029613018035888672,
                   "name" : "testDecodeMockedNagerHolidayPayload()",
                   "nodeIdentifier" : "HolidayAPIServiceTests/testDecodeMockedNagerHolidayPayload()",
                   "nodeIdentifierURL" : "test://com.apple.xcode/CalendarReplica/CalendarReplicaTests/HolidayAPIServiceTests/testDecodeMockedNagerHolidayPayload",
@@ -159,8 +177,8 @@
                   "result" : "Passed"
                 },
                 {
-                  "duration" : "0.18s",
-                  "durationInSeconds" : 0.17814600467681885,
+                  "duration" : "0.23s",
+                  "durationInSeconds" : 0.23432695865631104,
                   "name" : "testLiveNagerAPIFetchesSlovakPublicHolidays()",
                   "nodeIdentifier" : "HolidayAPIServiceTests/testLiveNagerAPIFetchesSlovakPublicHolidays()",
                   "nodeIdentifierURL" : "test://com.apple.xcode/CalendarReplica/CalendarReplicaTests/HolidayAPIServiceTests/testLiveNagerAPIFetchesSlovakPublicHolidays",
@@ -168,8 +186,8 @@
                   "result" : "Passed"
                 },
                 {
-                  "duration" : "0.0014s",
-                  "durationInSeconds" : 0.0013939142227172852,
+                  "duration" : "0.0031s",
+                  "durationInSeconds" : 0.0031260251998901367,
                   "name" : "testNon200ResponseThrowsInvalidResponseError()",
                   "nodeIdentifier" : "HolidayAPIServiceTests/testNon200ResponseThrowsInvalidResponseError()",
                   "nodeIdentifierURL" : "test://com.apple.xcode/CalendarReplica/CalendarReplicaTests/HolidayAPIServiceTests/testNon200ResponseThrowsInvalidResponseError",
@@ -193,8 +211,8 @@
             {
               "children" : [
                 {
-                  "duration" : "2m 47s",
-                  "durationInSeconds" : 167.28770697116852,
+                  "duration" : "3m 14s",
+                  "durationInSeconds" : 194.96161592006683,
                   "name" : "testFullAppFlowNavigationAPIAndCustomEvents()",
                   "nodeIdentifier" : "CalendarReplicaUITests/testFullAppFlowNavigationAPIAndCustomEvents()",
                   "nodeIdentifierURL" : "test://com.apple.xcode/CalendarReplica/CalendarReplicaUITests/CalendarReplicaUITests/testFullAppFlowNavigationAPIAndCustomEvents",

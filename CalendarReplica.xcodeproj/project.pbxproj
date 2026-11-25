@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0E5F8A4470F175B2CFA4A055 /* CalendarGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3CAA8D478D245D5DB5262E2 /* CalendarGridView.swift */; };
 		156B9511A1DB4ECCBEC3A8FA /* Holiday.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4841DCA3EF698D714647F673 /* Holiday.swift */; };
 		20D464AFDFCF132D001FD5EB /* AuthViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C29306EC7C912D60D9E913C /* AuthViewModelTests.swift */; };
 		2CA84C2F52943CD31E6EFB93 /* CalendarViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAB86FFA71BF8C79A5CE3983 /* CalendarViewModelTests.swift */; };
@@ -72,6 +73,7 @@
 		B4DA28A6AB959D3892ADD559 /* CalendarRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarRepository.swift; sourceTree = "<group>"; };
 		BAB86FFA71BF8C79A5CE3983 /* CalendarViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarViewModelTests.swift; sourceTree = "<group>"; };
 		C0A66F8246ACD056262AC1B2 /* HolidayAPIServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HolidayAPIServiceTests.swift; sourceTree = "<group>"; };
+		C3CAA8D478D245D5DB5262E2 /* CalendarGridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarGridView.swift; sourceTree = "<group>"; };
 		CCC15268122901195576F9AC /* AuthViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthViewModel.swift; sourceTree = "<group>"; };
 		D696EF8121A8D62E7ACAD2B3 /* CalendarIntents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarIntents.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -108,6 +110,7 @@
 		451B9337395ABD77C4F82081 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				C3CAA8D478D245D5DB5262E2 /* CalendarGridView.swift */,
 				988E2DC8468904F771D02A77 /* CalendarView.swift */,
 				43B102556B7760F9DBEF1A6D /* HomeView.swift */,
 				09052FE14A05159DF3E819A6 /* LoginView.swift */,
@@ -321,6 +324,7 @@
 			files = (
 				CE31E9BBBEF0F8770255544F /* AuthViewModel.swift in Sources */,
 				A43EB21671C4EAC62EE6CB94 /* CalendarEvent.swift in Sources */,
+				0E5F8A4470F175B2CFA4A055 /* CalendarGridView.swift in Sources */,
 				BEACCEB53FD0C277368D15B6 /* CalendarIntents.swift in Sources */,
 				A66AAB9BEEB155038E5D70CB /* CalendarReplicaApp.swift in Sources */,
 				E8FF9112967E8A2715F88422 /* CalendarRepository.swift in Sources */,

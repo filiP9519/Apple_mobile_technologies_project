@@ -12,7 +12,7 @@
       },
       "expectedFailures" : 0,
       "failedTests" : 0,
-      "passedTests" : 16,
+      "passedTests" : 18,
       "skippedTests" : 0,
       "testPlanConfiguration" : {
         "configurationId" : "1",
@@ -23,11 +23,11 @@
   "environmentDescription" : "CalendarReplica · Built with macOS 26.7.2",
   "expectedFailures" : 0,
   "failedTests" : 0,
-  "finishTime" : 1795613634.449,
-  "passedTests" : 16,
+  "finishTime" : 1795616325.773,
+  "passedTests" : 18,
   "result" : "Passed",
   "skippedTests" : 0,
-  "startTime" : 1795613194.626,
+  "startTime" : 1795615837.811,
   "statistics" : [
 
   ],
@@ -36,11 +36,7 @@
   ],
   "title" : "Test - CalendarReplica",
   "topInsights" : [
-    {
-      "category" : "Longest Test Runs",
-      "impact" : "61% of duration",
-      "text" : "1 longest test run with outlier durations exceeding 0.47s (three standard deviations)"
-    }
+
   ],
-  "totalTestCount" : 16
+  "totalTestCount" : 18
 }

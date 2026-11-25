@@ -10,7 +10,6 @@ settings:
     SWIFT_VERSION: "5.0"
     GENERATE_INFOPLIST_FILE: YES
     DEVELOPMENT_TEAM: ""
-    CODE_SIGNING_ALLOWED: NO
 
 targets:
   CalendarReplica:

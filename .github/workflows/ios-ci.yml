@@ -14,7 +14,7 @@ permissions:
 
 jobs:
   build-and-test:
-    runs-on: macos-15
+    runs-on: macos-latest
 
     steps:
       - name: Checkout repository
@@ -31,7 +31,7 @@ jobs:
       - name: Select and boot iOS Simulator
         run: |
           SIM_UDID=$(python3 - <<'PY'
-          import json, subprocess
+          import json, re, subprocess
 
           raw = subprocess.check_output(["xcrun", "simctl", "list", "devices", "available", "-j"])
           data = json.loads(raw)
@@ -39,31 +39,37 @@ jobs:
           for runtime, devices in data.get("devices", {}).items():
               if "iOS" not in runtime:
                   continue
+              m = re.search(r"iOS-(\d+)-(\d+)", runtime)
+              ver = (int(m.group(1)), int(m.group(2))) if m else (0, 0)
               for d in devices:
                   if d.get("isAvailable") and "iPhone" in d.get("name", ""):
-                      candidates.append((runtime, d["name"], d["udid"]))
+                      candidates.append((ver, runtime, d["name"], d["udid"]))
 
           def score(item):
-              runtime, name, _ = item
-              s = 0
-              if "iOS-18" in runtime:
-                  s += 100
-              if name == "iPhone 16":
-                  s += 50
+              ver, runtime, name, _ = item
+              name_prio = 0
+              if name == "iPhone 17":
+                  name_prio = 60
+              elif name == "iPhone 17 Pro":
+                  name_prio = 55
+              elif "iPhone 17" in name:
+                  name_prio = 50
+              elif name == "iPhone 16":
+                  name_prio = 40
               elif name == "iPhone 16 Pro":
-                  s += 40
+                  name_prio = 35
               elif "iPhone 16" in name:
-                  s += 30
+                  name_prio = 30
               elif "iPhone 15" in name:
-                  s += 20
-              return (s, runtime, name)
+                  name_prio = 20
+              return (ver, name_prio, name)
 
           candidates.sort(key=score, reverse=True)
           if not candidates:
               raise SystemExit("No available iPhone simulator found")
           chosen = candidates[0]
           print(f"Chosen simulator: {chosen}", file=__import__("sys").stderr)
-          print(chosen[2])
+          print(chosen[3])
           PY
           )
           echo "SIM_UDID=$SIM_UDID" >> "$GITHUB_ENV"
@@ -80,7 +86,6 @@ jobs:
             -scheme CalendarReplica \
             -destination "platform=iOS Simulator,id=$SIM_UDID" \
             -resultBundlePath TestResults.xcresult \
-            CODE_SIGNING_ALLOWED=NO \
             | tee test_output.log
 
       - name: Export Screenshots & Test Report

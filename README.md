@@ -4,7 +4,7 @@ An iOS SwiftUI replica of the Android [MobilneProjekt](https://github.com/filiP9
 
 ## Semester Project Requirements Checklist
 
-- **SwiftUI**: Complete 4-screen UI (`LoginView`, `RegisterView`, `HomeView`, `CalendarView`) inside a declarative `NavigationStack` architecture (`RootNavigationView`).
+- **SwiftUI**: Complete 4-screen UI (`LoginView`, `RegisterView`, `HomeView`, `CalendarView` + custom `CalendarGridView` with slight purple national holiday circles/dots, slight blue custom event circles/dots, and a legend) inside a declarative `NavigationStack` architecture (`RootNavigationView`).
 - **`@Observable`**: `AuthViewModel` and `CalendarViewModel` use the iOS 17+ `@Observable` macro (`Observation` framework) with `@Environment(...)`.
 - **SwiftData**: Persistent local storage using `@Model` classes (`UserModel` with `@Attribute(.unique)` and cascade relationship, and `CalendarEvent` scoped by owner and date key).
 - **App Intents**: `AddCalendarEventIntent`, `GetDayOverviewIntent`, and `CalendarAppShortcuts` (`AppShortcutsProvider`) for Siri & Apple Shortcuts integration.
@@ -51,6 +51,6 @@ Every push to `main` runs the full unit test suite (including live Nager.Date AP
 | --- | --- | --- | --- |
 | ![Login](docs/screenshots/01_login_screen.png) | ![Register](docs/screenshots/02_register_screen.png) | ![Home](docs/screenshots/03_home_screen.png) | ![Calendar](docs/screenshots/04_calendar_screen.png) |
 
-| Custom Event Added | API Holiday + Custom Event | After Event Deletion | Signed Out |
-| --- | --- | --- | --- |
-| ![Custom Event](docs/screenshots/05_custom_event_added.png) | ![API Holiday and Event](docs/screenshots/06_api_holiday_and_custom_event.png) | ![After Delete](docs/screenshots/07_after_event_deleted.png) | ![Signed Out](docs/screenshots/08_signed_out_login.png) |
+| Custom Event Added | Unselected Day Indicators | API Holiday + Custom Event | After Event Deletion | Signed Out |
+| --- | --- | --- | --- | --- |
+| ![Custom Event](docs/screenshots/05_custom_event_added.png) | ![Day Indicators](docs/screenshots/05b_calendar_indicators_unselected.png) | ![API Holiday and Event](docs/screenshots/06_api_holiday_and_custom_event.png) | ![After Delete](docs/screenshots/07_after_event_deleted.png) | ![Signed Out](docs/screenshots/08_signed_out_login.png) |

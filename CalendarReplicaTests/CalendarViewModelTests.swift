@@ -131,4 +131,67 @@ final class CalendarViewModelTests: XCTestCase {
         XCTAssertEqual(viewModel.apiErrorMessage, "Holiday API returned HTTP 503.")
         XCTAssertTrue(viewModel.holidaysForSelectedDate.isEmpty)
     }
+
+    func testDayIndicatorStateForHolidaysCustomEventsAndBoth() async throws {
+        let jan1 = try XCTUnwrap(DateFormatting.date(fromApiKey: "2026-01-01"))
+        let jan2 = try XCTUnwrap(DateFormatting.date(fromApiKey: "2026-01-02"))
+
+        await viewModel.selectDate(jan1)
+        XCTAssertEqual(
+            viewModel.indicatorState(for: jan1),
+            DayIndicatorState(hasHoliday: true, hasCustomEvent: false)
+        )
+        XCTAssertEqual(viewModel.indicatorState(for: jan1).accessibilityValue, "holiday")
+        XCTAssertEqual(
+            viewModel.indicatorState(for: jan2),
+            DayIndicatorState(hasHoliday: false, hasCustomEvent: false)
+        )
+        XCTAssertEqual(viewModel.indicatorState(for: jan2).accessibilityValue, "none")
+
+        // Add custom event on non-holiday day
+        await viewModel.selectDate(jan2)
+        viewModel.addEvent(title: "Gym Session")
+        XCTAssertEqual(
+            viewModel.indicatorState(for: jan2),
+            DayIndicatorState(hasHoliday: false, hasCustomEvent: true)
+        )
+        XCTAssertEqual(viewModel.indicatorState(for: jan2).accessibilityValue, "custom")
+
+        // Add custom event on holiday day -> both indicators active
+        await viewModel.selectDate(jan1)
+        viewModel.addEvent(title: "New Year Dinner")
+        XCTAssertEqual(
+            viewModel.indicatorState(for: jan1),
+            DayIndicatorState(hasHoliday: true, hasCustomEvent: true)
+        )
+        XCTAssertEqual(viewModel.indicatorState(for: jan1).accessibilityValue, "holiday,custom")
+
+        // Delete custom event on holiday -> reverts to holiday only
+        if let event = viewModel.events.first {
+            viewModel.deleteEvent(event)
+        }
+        XCTAssertEqual(
+            viewModel.indicatorState(for: jan1),
+            DayIndicatorState(hasHoliday: true, hasCustomEvent: false)
+        )
+
+        // Switching user isolates custom indicators
+        viewModel.setActiveUser(userB)
+        XCTAssertEqual(
+            viewModel.indicatorState(for: jan2),
+            DayIndicatorState(hasHoliday: false, hasCustomEvent: false)
+        )
+    }
+
+    func testMoveMonthUpdatesDisplayedMonthAndLoadsNewYearHolidays() async throws {
+        let dec15 = try XCTUnwrap(DateFormatting.date(fromApiKey: "2026-12-15"))
+        let jan1_2027 = try XCTUnwrap(DateFormatting.date(fromApiKey: "2027-01-01"))
+        await viewModel.selectDate(dec15)
+
+        await viewModel.moveMonth(by: 1)
+
+        XCTAssertEqual(DateFormatting.year(from: viewModel.displayedMonth), 2027)
+        XCTAssertEqual(Calendar.current.component(.month, from: viewModel.displayedMonth), 1)
+        XCTAssertTrue(viewModel.indicatorState(for: jan1_2027).hasHoliday)
+    }
 }

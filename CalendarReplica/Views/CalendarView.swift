@@ -7,32 +7,26 @@ struct CalendarView: View {
     @State private var eventTitle: String = ""
     @FocusState private var isTitleFieldFocused: Bool
 
-    private var dateBinding: Binding<Date> {
-        Binding(
-            get: { calendarViewModel.selectedDate },
-            set: { newDate in
-                Task {
-                    await calendarViewModel.selectDate(newDate)
-                }
-            }
-        )
-    }
-
     var body: some View {
         ScrollView {
             VStack(spacing: 16) {
-                DatePicker(
-                    "Select Date",
-                    selection: dateBinding,
-                    displayedComponents: .date
+                CalendarGridView(
+                    displayedMonth: calendarViewModel.displayedMonth,
+                    selectedDate: calendarViewModel.selectedDate,
+                    indicatorForDate: { date in
+                        calendarViewModel.indicatorState(for: date)
+                    },
+                    onSelectDate: { newDate in
+                        Task {
+                            await calendarViewModel.selectDate(newDate)
+                        }
+                    },
+                    onChangeMonth: { offset in
+                        Task {
+                            await calendarViewModel.moveMonth(by: offset)
+                        }
+                    }
                 )
-                .datePickerStyle(.graphical)
-                .padding(8)
-                .background(
-                    RoundedRectangle(cornerRadius: 16)
-                        .fill(Color(.secondarySystemBackground))
-                )
-                .accessibilityIdentifier("calendar.datePicker")
 
                 Text(DateFormatting.displayDate(from: calendarViewModel.selectedDate))
                     .font(.title2.bold())
@@ -189,7 +183,7 @@ private struct HolidayCardView: View {
         .padding(14)
         .background(
             RoundedRectangle(cornerRadius: 12)
-                .fill(Color.accentColor.opacity(0.15))
+                .fill(Color.purple.opacity(0.14))
         )
     }
 }
@@ -200,6 +194,10 @@ private struct EventCardView: View {
 
     var body: some View {
         HStack(spacing: 12) {
+            Circle()
+                .fill(Color.blue)
+                .frame(width: 8, height: 8)
+
             VStack(alignment: .leading, spacing: 4) {
                 Text(event.title)
                     .font(.body.weight(.medium))
@@ -223,7 +221,7 @@ private struct EventCardView: View {
         .padding(14)
         .background(
             RoundedRectangle(cornerRadius: 12)
-                .fill(Color(.secondarySystemBackground))
+                .fill(Color.blue.opacity(0.10))
         )
     }
 }

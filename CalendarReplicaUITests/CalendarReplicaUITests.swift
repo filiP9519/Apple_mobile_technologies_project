@@ -50,9 +50,12 @@ final class CalendarReplicaUITests: XCTestCase {
 
         // 4. Navigate to Calendar screen & wait for live Nager.Date public holidays
         app.buttons["home.openCalendar"].tap()
-        let datePicker = app.datePickers["calendar.datePicker"]
-        XCTAssertTrue(datePicker.waitForExistence(timeout: 10), "Calendar DatePicker should appear")
-        XCTAssertTrue(app.staticTexts["calendar.selectedDate"].waitForExistence(timeout: 5))
+        let monthTitle = app.staticTexts["calendar.monthTitle"]
+        XCTAssertTrue(monthTitle.waitForExistence(timeout: 10), "Calendar month grid should appear")
+        let selectedDateLabel = app.staticTexts["calendar.selectedDate"]
+        XCTAssertTrue(selectedDateLabel.waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["calendar.legend.holiday"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["calendar.legend.custom"].waitForExistence(timeout: 5))
 
         let holidayChipPredicate = NSPredicate(format: "identifier BEGINSWITH 'calendar.holidayChip.'")
         let firstHolidayChip = app.buttons.matching(holidayChipPredicate).firstMatch
@@ -61,9 +64,17 @@ final class CalendarReplicaUITests: XCTestCase {
             "Live Nager.Date public holiday chips should load for current year"
         )
         Thread.sleep(forTimeInterval: 0.5)
+
+        let todayKey = apiKey(fromDisplayDate: selectedDateLabel.label)
+        let adjacentDayKey = adjacentApiKey(fromDisplayDate: selectedDateLabel.label)
+        let todayDayButton = app.buttons["calendar.day.\(todayKey)"]
+        XCTAssertTrue(todayDayButton.waitForExistence(timeout: 5), "Today's cell should exist in calendar grid")
+        let initialTodayIndicator = (todayDayButton.value as? String) ?? ""
+        XCTAssertFalse(initialTodayIndicator.contains("custom"), "Today should not have a custom event indicator yet")
+
         captureScreenshot(named: "04_calendar_screen")
 
-        // 5. Add a custom event on today's date
+        // 5. Add a custom event on today's date and verify blue custom indicator updates
         let eventField = app.textFields["calendar.eventTitle"]
         focusAndType("Doctor Appointment\n", into: eventField)
 
@@ -72,13 +83,27 @@ final class CalendarReplicaUITests: XCTestCase {
 
         let doctorEvent = app.staticTexts["Doctor Appointment"]
         XCTAssertTrue(doctorEvent.waitForExistence(timeout: 5), "Custom event should be displayed")
+        let updatedTodayIndicator = (todayDayButton.value as? String) ?? ""
+        XCTAssertTrue(updatedTodayIndicator.contains("custom"), "Today should now show custom event indicator")
         captureScreenshot(named: "05_custom_event_added")
 
-        // 6. Select a live API public holiday date & add a custom event on that same date
+        // 5b. Tap an adjacent day so today clearly shows its unselected slight-blue circle & dot
+        let adjacentButton = app.buttons["calendar.day.\(adjacentDayKey)"]
+        scrollToAndTap(adjacentButton)
+        XCTAssertTrue(todayDayButton.waitForExistence(timeout: 5))
+        XCTAssertTrue(((todayDayButton.value as? String) ?? "").contains("custom"))
+        captureScreenshot(named: "05b_calendar_indicators_unselected")
+
+        // 6. Select a live API public holiday date, verify slight-purple holiday indicator, & add a custom event
+        let holidayDateKey = firstHolidayChip.identifier.replacingOccurrences(of: "calendar.holidayChip.", with: "")
         scrollToAndTap(firstHolidayChip)
 
         let holidayCard = app.staticTexts["calendar.holidayCard"]
         XCTAssertTrue(holidayCard.waitForExistence(timeout: 5), "API public holiday card should appear")
+
+        let holidayDayButton = app.buttons["calendar.day.\(holidayDateKey)"]
+        XCTAssertTrue(holidayDayButton.waitForExistence(timeout: 5))
+        XCTAssertEqual(holidayDayButton.value as? String, "holiday")
 
         focusAndType("Holiday Dinner\n", into: eventField)
         scrollToAndTap(addEventButton)
@@ -86,16 +111,25 @@ final class CalendarReplicaUITests: XCTestCase {
         let holidayDinnerEvent = app.staticTexts["Holiday Dinner"]
         XCTAssertTrue(holidayDinnerEvent.waitForExistence(timeout: 5), "Custom event should appear alongside API holiday")
         XCTAssertTrue(holidayCard.exists, "API holiday card should remain visible alongside custom event")
+        XCTAssertEqual(holidayDayButton.value as? String, "holiday,custom")
         captureScreenshot(named: "06_api_holiday_and_custom_event")
 
-        // 7. Delete the custom event and verify API holiday stays
+        // 7. Delete the custom event and verify holiday indicator remains while custom indicator clears
         let deleteButton = app.buttons["calendar.deleteEvent"].firstMatch
         scrollToAndTap(deleteButton)
         XCTAssertFalse(holidayDinnerEvent.waitForExistence(timeout: 2), "Deleted custom event should be removed")
         XCTAssertTrue(holidayCard.exists, "Public holiday card should remain after deleting custom event")
+        XCTAssertEqual(holidayDayButton.value as? String, "holiday")
         captureScreenshot(named: "07_after_event_deleted")
 
-        // 8. Sign out -> Login screen -> Log back in -> Verify SwiftData persistence
+        // 7b. Verify month navigation arrows work cleanly
+        let currentMonthTitle = monthTitle.label
+        scrollToAndTap(app.buttons["calendar.nextMonth"])
+        XCTAssertNotEqual(monthTitle.label, currentMonthTitle, "Next month button should advance displayed month")
+        scrollToAndTap(app.buttons["calendar.prevMonth"])
+        XCTAssertEqual(monthTitle.label, currentMonthTitle, "Previous month button should return to original month")
+
+        // 8. Sign out -> Login screen -> Log back in -> Verify SwiftData persistence & indicator
         app.buttons["calendar.signOut"].tap()
         XCTAssertTrue(loginTitle.waitForExistence(timeout: 10), "SignOut should return to Login screen")
         captureScreenshot(named: "08_signed_out_login")
@@ -110,7 +144,10 @@ final class CalendarReplicaUITests: XCTestCase {
 
         XCTAssertTrue(homeTitle.waitForExistence(timeout: 10), "Re-login should navigate back to Home")
         app.buttons["home.openCalendar"].tap()
-        XCTAssertTrue(datePicker.waitForExistence(timeout: 10))
+        XCTAssertTrue(monthTitle.waitForExistence(timeout: 10))
+        XCTAssertTrue(todayDayButton.waitForExistence(timeout: 5))
+        XCTAssertTrue(((todayDayButton.value as? String) ?? "").contains("custom"))
+
         let persistedEvent = app.staticTexts["Doctor Appointment"]
         if !persistedEvent.waitForExistence(timeout: 3) {
             app.swipeUp()
@@ -119,6 +156,19 @@ final class CalendarReplicaUITests: XCTestCase {
             persistedEvent.waitForExistence(timeout: 5),
             "Previously saved custom event should persist across sign-out and sign-in"
         )
+    }
+
+    private func apiKey(fromDisplayDate display: String) -> String {
+        let parts = display.split(separator: ".")
+        guard parts.count == 3 else { return "" }
+        return "\(parts[2])-\(parts[1])-\(parts[0])"
+    }
+
+    private func adjacentApiKey(fromDisplayDate display: String) -> String {
+        let parts = display.split(separator: ".")
+        guard parts.count == 3, let day = Int(parts[0]) else { return "" }
+        let adjacent = day == 1 ? 2 : day - 1
+        return String(format: "%@-%@-%02d", String(parts[2]), String(parts[1]), adjacent)
     }
 
     private func focusAndType(_ text: String, into field: XCUIElement) {

@@ -41,7 +41,7 @@ An iOS SwiftUI replica of the Android [MobilneProjekt](https://github.com/filiP9
 
 ## Automated Verification & Proof
 
-Every push to `main` runs the full unit test suite (including live Nager.Date API & App Intent tests) and end-to-end XCUITest suite on a `macos-15` iOS Simulator via GitHub Actions:
+Every push to `main` runs the full unit test suite (including live Nager.Date API & App Intent tests) and end-to-end XCUITest suite on a `macos-latest` iOS Simulator via GitHub Actions:
 
 - Full test report: [`docs/TEST_REPORT.md`](docs/TEST_REPORT.md)
 

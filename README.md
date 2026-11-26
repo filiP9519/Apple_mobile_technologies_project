@@ -39,6 +39,15 @@ An iOS SwiftUI replica of the Android [MobilneProjekt](https://github.com/filiP9
 2. Select the `CalendarReplica` scheme and any iOS 17+ / 18+ Simulator.
 3. Run the app (`Cmd+R`) or run all unit and UI tests (`Cmd+U`).
 
+## Installing on a Physical iPhone (`.ipa`)
+
+The [`Build Unsigned iOS IPA`](.github/workflows/build-ipa.yml) GitHub Actions workflow builds a Release ARM64 `CalendarReplica.ipa` and publishes it both as a workflow artifact (`CalendarReplica-iOS-IPA`) and on the [`latest-ipa`](https://github.com/filiP9519/Apple_mobile_technologies_project/releases/tag/latest-ipa) Release page:
+
+1. Download `CalendarReplica.ipa` from the **Releases** page (or Actions artifact).
+2. Connect your iPhone to Windows via USB and open **Sideloadly** (or **AltStore**).
+3. Drag `CalendarReplica.ipa` into Sideloadly, enter your free personal Apple ID, and click **Start**.
+4. On your iPhone: enable **Settings → Privacy & Security → Developer Mode** and trust your Apple ID in **Settings → General → VPN & Device Management**.
+
 ## Automated Verification & Proof
 
 Every push to `main` runs the full unit test suite (including live Nager.Date API & App Intent tests) and end-to-end XCUITest suite on a `macos-latest` iOS Simulator via GitHub Actions:

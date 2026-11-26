@@ -1,36 +1,106 @@
-name: Build Unsigned IPA
+name: Build Unsigned iOS IPA
 
 on:
-  workflow_dispatch: # Lets you trigger the build manually via a button
+  push:
+    branches:
+      - main
+    paths:
+      - 'CalendarReplica/**'
+      - 'project.yml'
+      - '.github/workflows/build-ipa.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
-  build-ios:
+  build-ipa:
     runs-on: macos-latest
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Build unsigned .app
+      - name: Show Xcode version
+        run: xcodebuild -version
+
+      - name: Install XcodeGen and generate Xcode project
         run: |
-          xcodebuild \
+          brew install xcodegen
+          xcodegen generate
+
+      - name: Build unsigned Release iOS app (arm64 device)
+        run: |
+          set -o pipefail
+          xcodebuild build \
             -project CalendarReplica.xcodeproj \
             -scheme CalendarReplica \
             -configuration Release \
             -sdk iphoneos \
-            -destination 'generic/platform=iOS' \
-            -derivedDataPath build \
+            -destination "generic/platform=iOS" \
+            -derivedDataPath build/DerivedData \
             CODE_SIGNING_ALLOWED=NO \
             CODE_SIGNING_REQUIRED=NO \
-            CODE_SIGN_IDENTITY=""
+            CODE_SIGN_IDENTITY="" \
+            ENABLE_BITCODE=NO \
+            | tee build_ipa.log
 
-      - name: Package into .ipa
+      - name: Package and verify CalendarReplica.ipa
         run: |
-          mkdir -p Payload
-          cp -r build/Build/Products/Release-iphoneos/CalendarReplica.app Payload/
-          zip -r CalendarReplica.ipa Payload
+          APP_PATH="build/DerivedData/Build/Products/Release-iphoneos/CalendarReplica.app"
+          if [ ! -d "$APP_PATH" ]; then
+            echo "Error: $APP_PATH not found"
+            exit 1
+          fi
 
-      - name: Upload IPA artifact
+          rm -rf build/Payload build/CalendarReplica.ipa
+          mkdir -p build/Payload
+          cp -R "$APP_PATH" build/Payload/
+          rm -rf build/Payload/CalendarReplica.app/_CodeSignature
+
+          echo "=== Verify ARM64 device binary ==="
+          lipo -info build/Payload/CalendarReplica.app/CalendarReplica
+          file build/Payload/CalendarReplica.app/CalendarReplica
+
+          echo "=== Verify Info.plist ==="
+          plutil -p build/Payload/CalendarReplica.app/Info.plist
+
+          echo "=== Verify AppIntents metadata ==="
+          ls -la build/Payload/CalendarReplica.app/Metadata.appintents || true
+
+          (cd build && zip -qry CalendarReplica.ipa Payload)
+          ls -lh build/CalendarReplica.ipa
+          unzip -l build/CalendarReplica.ipa | head -n 40
+
+      - name: Upload CalendarReplica.ipa workflow artifact
         uses: actions/upload-artifact@v4
         with:
-          name: CalendarReplica-ipa
-          path: CalendarReplica.ipa
+          name: CalendarReplica-iOS-IPA
+          path: build/CalendarReplica.ipa
+          retention-days: 90
+
+      - name: Publish CalendarReplica.ipa to GitHub Release (latest-ipa)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          SHORT_SHA="${GITHUB_SHA:0:7}"
+          printf '%s\n' \
+            "Unsigned Release ARM64 iOS IPA built automatically from commit \`${SHORT_SHA}\`." \
+            "" \
+            "### How to install on your iPhone (from Windows — no Mac needed)" \
+            "1. Download **CalendarReplica.ipa** below." \
+            "2. Install **Sideloadly** (https://sideloadly.io/) or **AltStore** on Windows and connect your iPhone via USB." \
+            "3. Drag \`CalendarReplica.ipa\` into Sideloadly, sign in with your free personal Apple ID, and click **Start**." \
+            "4. On your iPhone: enable **Settings → Privacy & Security → Developer Mode** and trust your Apple ID under **Settings → General → VPN & Device Management**." \
+            "5. Open **CalendarReplica** on your iPhone (free Apple ID signatures stay valid for 7 days and can be refreshed anytime)." \
+            > build/release_notes.md
+
+          if gh release view latest-ipa >/dev/null 2>&1; then
+            gh release edit latest-ipa --notes-file build/release_notes.md
+            gh release upload latest-ipa build/CalendarReplica.ipa --clobber
+          else
+            gh release create latest-ipa build/CalendarReplica.ipa \
+              --target "$GITHUB_SHA" \
+              --title "CalendarReplica iOS IPA (Latest Unsigned Build)" \
+              --notes-file build/release_notes.md
+          fi

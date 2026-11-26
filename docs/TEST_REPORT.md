@@ -10,24 +10,24 @@
 
 | Suite | Test Case | Result | Duration |
 | --- | --- | --- | --- |
-| CalendarReplicaTests / AuthViewModelTests | `testDuplicateRegistrationReturnsUsernameExistsError()` | Passed | 0.066s |
-| CalendarReplicaTests / AuthViewModelTests | `testLoginWithEmptyCredentialsSetsError()` | Passed | 0.0076s |
-| CalendarReplicaTests / AuthViewModelTests | `testLoginWithValidAndInvalidCredentials()` | Passed | 0.013s |
-| CalendarReplicaTests / AuthViewModelTests | `testRegisterNewUserAutoAuthenticatesAndPersists()` | Passed | 0.059s |
-| CalendarReplicaTests / AuthViewModelTests | `testRegisterWithEmptyCredentialsSetsError()` | Passed | 0.0043s |
-| CalendarReplicaTests / AuthViewModelTests | `testSignOutClearsStateAndDefaults()` | Passed | 0.0075s |
-| CalendarReplicaTests / CalendarIntentsTests | `testAddCalendarEventIntentPersistsEventToSwiftData()` | Passed | 0.14s |
-| CalendarReplicaTests / CalendarIntentsTests | `testGetDayOverviewIntentCombinesHolidaysAndCustomEvents()` | Passed | 0.02s |
-| CalendarReplicaTests / CalendarViewModelTests | `testAddAndDeleteCustomEventPersistsInSwiftData()` | Passed | 0.013s |
-| CalendarReplicaTests / CalendarViewModelTests | `testDayIndicatorStateForHolidaysCustomEventsAndBoth()` | Passed | 0.017s |
-| CalendarReplicaTests / CalendarViewModelTests | `testEventsAreIsolatedPerUserAndDate()` | Passed | 0.024s |
-| CalendarReplicaTests / CalendarViewModelTests | `testHolidayAPIErrorSetsMessageWithoutCrashing()` | Passed | 0.0091s |
-| CalendarReplicaTests / CalendarViewModelTests | `testHolidayFilteringAndYearCaching()` | Passed | 0.013s |
-| CalendarReplicaTests / CalendarViewModelTests | `testMoveMonthUpdatesDisplayedMonthAndLoadsNewYearHolidays()` | Passed | 0.011s |
-| CalendarReplicaTests / HolidayAPIServiceTests | `testDecodeMockedNagerHolidayPayload()` | Passed | 0.069s |
+| CalendarReplicaTests / AuthViewModelTests | `testDuplicateRegistrationReturnsUsernameExistsError()` | Passed | 0.048s |
+| CalendarReplicaTests / AuthViewModelTests | `testLoginWithEmptyCredentialsSetsError()` | Passed | 0.0085s |
+| CalendarReplicaTests / AuthViewModelTests | `testLoginWithValidAndInvalidCredentials()` | Passed | 0.014s |
+| CalendarReplicaTests / AuthViewModelTests | `testRegisterNewUserAutoAuthenticatesAndPersists()` | Passed | 0.018s |
+| CalendarReplicaTests / AuthViewModelTests | `testRegisterWithEmptyCredentialsSetsError()` | Passed | 0.0048s |
+| CalendarReplicaTests / AuthViewModelTests | `testSignOutClearsStateAndDefaults()` | Passed | 0.0077s |
+| CalendarReplicaTests / CalendarIntentsTests | `testAddCalendarEventIntentPersistsEventToSwiftData()` | Passed | 0.034s |
+| CalendarReplicaTests / CalendarIntentsTests | `testGetDayOverviewIntentCombinesHolidaysAndCustomEvents()` | Passed | 0.017s |
+| CalendarReplicaTests / CalendarViewModelTests | `testAddAndDeleteCustomEventPersistsInSwiftData()` | Passed | 0.023s |
+| CalendarReplicaTests / CalendarViewModelTests | `testDayIndicatorStateForHolidaysCustomEventsAndBoth()` | Passed | 0.026s |
+| CalendarReplicaTests / CalendarViewModelTests | `testEventsAreIsolatedPerUserAndDate()` | Passed | 0.018s |
+| CalendarReplicaTests / CalendarViewModelTests | `testHolidayAPIErrorSetsMessageWithoutCrashing()` | Passed | 0.012s |
+| CalendarReplicaTests / CalendarViewModelTests | `testHolidayFilteringAndYearCaching()` | Passed | 0.12s |
+| CalendarReplicaTests / CalendarViewModelTests | `testMoveMonthUpdatesDisplayedMonthAndLoadsNewYearHolidays()` | Passed | 0.006s |
+| CalendarReplicaTests / HolidayAPIServiceTests | `testDecodeMockedNagerHolidayPayload()` | Passed | 0.49s |
 | CalendarReplicaTests / HolidayAPIServiceTests | `testLiveNagerAPIFetchesSlovakPublicHolidays()` | Passed | 1s |
-| CalendarReplicaTests / HolidayAPIServiceTests | `testNon200ResponseThrowsInvalidResponseError()` | Passed | 0.0017s |
-| CalendarReplicaUITests / CalendarReplicaUITests | `testFullAppFlowNavigationAPIAndCustomEvents()` | Passed | 2m 23s |
+| CalendarReplicaTests / HolidayAPIServiceTests | `testNon200ResponseThrowsInvalidResponseError()` | Passed | 0.0029s |
+| CalendarReplicaUITests / CalendarReplicaUITests | `testFullAppFlowNavigationAPIAndCustomEvents()` | Passed | 2m 48s |
 
 ## Captured Simulator Screenshots
 
